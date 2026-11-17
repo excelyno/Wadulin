@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-5xl px-5 py-14 sm:px-8">
         <div class="mb-6">
             <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-700">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
@@ -19,7 +19,7 @@
 
         <div class="grid gap-8 lg:grid-cols-5">
             <div class="lg:col-span-3">
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div class="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm sm:p-9">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-mono font-medium text-slate-600">{{ $pengaduan->kode_pengaduan }}</span>
                         <x-status-badge :status="$pengaduan->status" />

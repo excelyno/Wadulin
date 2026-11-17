@@ -7,10 +7,28 @@ use App\Enums\StatusPengaduan;
 use App\Http\Requests\StorePengaduanRequest;
 use App\Models\Pengaduan;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PengaduanController extends Controller
 {
+    public function track(Request $request): View|RedirectResponse
+    {
+        $kode = strtoupper(trim($request->string('kode')->toString()));
+
+        if ($kode === '') {
+            return view('pengaduan.track');
+        }
+
+        $pengaduan = Pengaduan::where('kode_pengaduan', $kode)->first();
+
+        if ($pengaduan === null) {
+            return back()->withInput()->withErrors(['kode' => 'Kode tiket tidak ditemukan. Periksa kembali kode pengaduan Anda.']);
+        }
+
+        return redirect()->route('pengaduan.show', $pengaduan);
+    }
+
     public function create(): View
     {
         return view('pengaduan.create', [

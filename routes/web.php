@@ -16,6 +16,7 @@ Route::get('/', function () {
 Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
 Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
 Route::get('/pengaduan/{pengaduan}', [PengaduanController::class, 'show'])->name('pengaduan.show');
+Route::get('/lacak', [PengaduanController::class, 'track'])->name('pengaduan.track');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/api/pengaduan', [DashboardController::class, 'geojson'])->name('pengaduan.geojson');

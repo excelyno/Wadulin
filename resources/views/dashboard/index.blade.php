@@ -7,14 +7,14 @@
 @endpush
 
 @section('content')
-    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-5 py-12 sm:px-8">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Dashboard Pengaduan</h1>
                 <p class="mt-2 text-slate-600">Daftar dan lokasi pengaduan warga, diperbarui secara langsung.</p>
             </div>
             <a href="{{ route('pengaduan.create') }}"
-               class="inline-flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                 class="inline-flex items-center justify-center gap-2 rounded-md bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-700">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
                     <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
                 </svg>
@@ -23,13 +23,13 @@
         </div>
 
         @guest
-            <div class="mt-6 flex flex-col gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm text-indigo-900">
+            <div class="mt-6 flex flex-col gap-3 rounded-xl border border-primary-600/20 bg-primary-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-primary-700">
                     Anda melihat dashboard sebagai <span class="font-semibold">pengunjung</span>. Masuk atau daftar sebagai petugas untuk mengelola pengaduan.
                 </p>
                 <div class="flex shrink-0 gap-2">
-                    <a href="{{ route('login') }}" class="inline-flex items-center rounded-md border border-indigo-300 bg-white px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100">Masuk</a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Daftar</a>
+                    <a href="{{ route('login') }}" class="inline-flex items-center rounded-md border border-primary-600/30 bg-white px-3 py-2 text-sm font-medium text-primary-700 hover:bg-primary-50">Masuk</a>
+                    <a href="{{ route('register') }}" class="inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white hover:bg-primary-700">Daftar</a>
                 </div>
             </div>
         @else
@@ -44,7 +44,7 @@
         <div class="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
             @php
                 $statCards = [
-                    ['label' => 'Total Pengaduan', 'value' => $stats['total'], 'ring' => 'bg-indigo-50 text-indigo-600', 'pending' => false],
+                    ['label' => 'Total Pengaduan', 'value' => $stats['total'], 'ring' => 'bg-primary-50 text-primary-600', 'pending' => false],
                     ['label' => 'Diajukan', 'value' => $stats['pending'], 'ring' => 'bg-amber-50 text-amber-600', 'pending' => false],
                     ['label' => 'Diproses', 'value' => $stats['proses'], 'ring' => 'bg-sky-50 text-sky-600', 'pending' => false],
                     ['label' => 'Selesai', 'value' => $stats['selesai'], 'ring' => 'bg-emerald-50 text-emerald-600', 'pending' => false],
@@ -106,7 +106,7 @@
                         $href = $value === '' ? route('dashboard') : route('dashboard', ['status' => $value]);
                     @endphp
                     <a href="{{ $href }}"
-                       class="rounded-full px-3.5 py-1.5 text-sm font-medium {{ $isActive ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 ring-1 ring-inset ring-slate-300 hover:bg-slate-100' }}">
+                       class="rounded-full px-3.5 py-1.5 text-sm font-medium {{ $isActive ? 'bg-primary-600 text-white' : 'bg-white text-slate-600 ring-1 ring-inset ring-slate-300 hover:bg-slate-100' }}">
                         {{ $label }}
                     </a>
                 @endforeach
@@ -126,7 +126,7 @@
                             <x-status-badge :status="$p->status" />
                         </div>
                         <h3 class="mt-2 line-clamp-2 text-base font-semibold text-slate-900">
-                            <a href="{{ route('pengaduan.show', $p) }}" class="hover:text-indigo-700">{{ $p->judul }}</a>
+                             <a href="{{ route('pengaduan.show', $p) }}" class="hover:text-primary-700">{{ $p->judul }}</a>
                         </h3>
                         <div class="mt-2"><x-kategori-badge :kategori="$p->kategori" /></div>
                         <p class="mt-3 flex items-start gap-1.5 text-sm text-slate-600 line-clamp-2">
@@ -151,7 +151,7 @@
                                     @method('PATCH')
                                     <label for="status-{{ $p->id }}" class="text-xs font-medium text-slate-500">Ubah status</label>
                                     <select id="status-{{ $p->id }}" name="status" onchange="this.form.submit()"
-                                            class="mt-1 block w-full rounded-md border-0 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600">
+                                             class="mt-1 block w-full rounded-md border-0 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-primary-600">
                                         @foreach (\App\Enums\StatusPengaduan::cases() as $st)
                                             <option value="{{ $st->value }}" {{ $p->status === $st ? 'selected' : '' }}>{{ $st->label() }}</option>
                                         @endforeach
@@ -172,7 +172,7 @@
                         @endauth
 
                         <div class="mt-4 flex-1"></div>
-                        <a href="{{ route('pengaduan.show', $p) }}" class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        <a href="{{ route('pengaduan.show', $p) }}" class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700">
                             Lihat detail
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
                                 <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.64l-3.72-3.72a.75.75 0 1 1 1.06-1.06l5 5a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 1 1-1.06-1.06l3.72-3.72H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/>
