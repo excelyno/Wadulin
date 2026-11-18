@@ -1,55 +1,58 @@
 @extends('layouts.app')
 
-@section('title', 'Masuk · Wadulin')
+@section('title', 'Masuk · WADULIN')
 
 @section('content')
-    <div class="mx-auto max-w-md px-4 py-12 sm:px-6">
-        <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Masuk ke Wadulin</h1>
-            <p class="mt-2 text-sm text-slate-600">Petugas dan administrator dapat mengelola pengaduan setelah masuk.</p>
+    <div class="container-page grid gap-10 py-12 lg:grid-cols-[440px_1fr]">
+        <div>
+            <h1 class="text-3xl font-extrabold">Masuk</h1>
+            <p class="mt-2 text-ink-700">Untuk warga dan petugas. Petugas otomatis diarahkan ke panelnya.</p>
 
             @if ($errors->any())
-                <div class="mt-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                    {{ $errors->first() }}
-                </div>
+                <p class="alert-error mt-6" role="alert">{{ $errors->first() }}</p>
             @endif
 
             <form method="POST" action="{{ route('login.store') }}" class="mt-6 space-y-5">
                 @csrf
                 <div>
-                    <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
+                    <label for="email" class="field-label">Email</label>
                     <input type="email" name="email" id="email" value="{{ old('email') }}" autocomplete="email" required autofocus
-                            class="mt-1.5 block w-full rounded-md border-0 px-3.5 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset {{ $errors->has('email') ? 'ring-rose-500 focus:ring-rose-500' : 'ring-slate-300 focus:ring-2 focus:ring-primary-600' }}">
-                    @error('email')<p class="mt-1.5 text-sm text-rose-600">{{ $message }}</p>@enderror
+                           @class(['field-input', 'field-input-invalid' => $errors->has('email')])>
                 </div>
                 <div>
-                    <label for="password" class="block text-sm font-medium text-slate-700">Kata Sandi</label>
+                    <label for="password" class="field-label">Kata sandi</label>
                     <input type="password" name="password" id="password" autocomplete="current-password" required
-                            class="mt-1.5 block w-full rounded-md border-0 px-3.5 py-2.5 text-slate-900 shadow-sm ring-1 ring-inset {{ $errors->has('password') ? 'ring-rose-500 focus:ring-rose-500' : 'ring-slate-300 focus:ring-2 focus:ring-primary-600' }}">
-                    @error('password')<p class="mt-1.5 text-sm text-rose-600">{{ $message }}</p>@enderror
+                           @class(['field-input', 'field-input-invalid' => $errors->has('password')])>
+                    @error('password')<p class="field-error">{{ $message }}</p>@enderror
                 </div>
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-sm text-slate-600">
-                        <input type="checkbox" name="remember" value="1" class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-600">
-                        Ingat saya
-                    </label>
-                </div>
-                <button type="submit"
-                         class="w-full rounded-md bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-700">
-                    Masuk
-                </button>
+                <label class="flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="remember" value="1" class="h-5 w-5 rounded border-ink-900/40 text-primary-600">
+                    Tetap masuk di perangkat ini
+                </label>
+                <button type="submit" class="btn btn-primary w-full py-3">Masuk</button>
             </form>
 
-            <p class="mt-6 text-center text-sm text-slate-600">
-                Belum punya akun?
-                <a href="{{ route('register') }}" class="font-semibold text-primary-600 hover:text-primary-700">Daftar di sini</a>
-            </p>
-
-            <div class="mt-6 rounded-lg bg-slate-50 p-3 text-xs text-slate-500">
-                <p class="font-medium text-slate-600">Akun demo (seeder):</p>
-                <p>admin@wadulin.test / password</p>
-                <p>petugas@wadulin.test / password</p>
-            </div>
+            <p class="mt-6 text-sm text-ink-700">Belum punya akun? <a href="{{ route('register') }}" class="link">Daftar sebagai warga</a></p>
         </div>
+
+        @if (app()->isLocal())
+            <aside class="panel h-fit p-5 text-sm">
+                <h2 class="font-bold">Akun demo</h2>
+                <p class="mt-1 text-ink-700">Hanya tampil di mode <code class="font-mono">local</code>. Semua kata sandi: <code class="font-mono font-semibold">password</code></p>
+                <table class="mt-4 w-full text-left">
+                    <thead class="text-xs text-ink-700">
+                        <tr><th class="pb-2 font-medium">Peran</th><th class="pb-2 font-medium">Email</th></tr>
+                    </thead>
+                    <tbody class="divide-y divide-line">
+                        @foreach ([['Warga', 'warga@wadulin.test'], ['Admin Kecamatan (Patrang)', 'patrang@wadulin.test'], ['Admin Kabupaten', 'kabupaten@wadulin.test']] as [$role, $email])
+                            <tr>
+                                <td class="py-2 pr-3">{{ $role }}</td>
+                                <td class="py-2 font-mono">{{ $email }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </aside>
+        @endif
     </div>
 @endsection

@@ -19,15 +19,20 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        $credentials = [...$request->only('email', 'password'), 'is_active' => true];
+
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'email' => 'Email atau kata sandi yang Anda masukkan salah.',
+                'email' => 'Email atau password salah.',
             ]);
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'))->with('success', 'Anda berhasil masuk.');
+        $user = $request->user();
+        $user->forceFill(['last_login_at' => now()])->save();
+
+        return redirect()->intended(route($user->role->homeRoute()));
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -37,6 +42,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('dashboard')->with('success', 'Anda telah keluar.');
+        return redirect()->route('beranda')->with('success', 'Anda telah keluar.');
     }
 }

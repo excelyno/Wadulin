@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -6,16 +6,106 @@
 @source '../../resources/views/**/*.blade.php';
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --color-primary-600: #0e7c66;
-    --color-primary-700: #0b6352;
-    --color-primary-50: #e7f5f1;
-    --color-accent-500: #f5b700;
-    --color-ink-900: #06211c;
-    --color-ink-700: #0d3a31;
-    --color-paper: #faf9f5;
+    --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    --color-primary-50: #e8f3ef;
+    --color-primary-100: #cfe6dd;
+    --color-primary-600: #0b6b55;
+    --color-primary-700: #08513f;
+    --color-primary-800: #063d30;
+    --color-accent-500: #ffcc00;
+    --color-ink-900: #14211d;
+    --color-ink-700: #33423d;
+    --color-paper: #f6f5f1;
+    --color-line: #d7d5cd;
 }
 
-body {
-    background: #faf9f5;
+@layer base {
+    body {
+        background: var(--color-paper);
+        color: var(--color-ink-900);
+    }
+
+    /* Satu gaya fokus yang tegas untuk semua elemen interaktif. */
+    a:focus-visible,
+    button:focus-visible,
+    summary:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+        outline: 3px solid var(--color-accent-500);
+        outline-offset: 0;
+        box-shadow: 0 0 0 5px var(--color-ink-900);
+    }
+
+    h1, h2, h3 {
+        letter-spacing: -0.015em;
+    }
+}
+
+@layer components {
+    .container-page {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    }
+
+    .panel {
+        @apply rounded-md border border-line bg-white;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:opacity-50;
+    }
+
+    .btn-primary {
+        @apply bg-primary-600 text-white shadow-[0_2px_0_var(--color-primary-800)] hover:bg-primary-700;
+    }
+
+    .btn-secondary {
+        @apply border border-ink-900/25 bg-white text-ink-900 hover:bg-paper;
+    }
+
+    .btn-danger {
+        @apply border border-red-700 bg-white text-red-700 hover:bg-red-50;
+    }
+
+    .link {
+        @apply font-semibold text-primary-700 underline decoration-primary-700/30 underline-offset-4 hover:decoration-primary-700;
+    }
+
+    .field-label {
+        @apply block text-sm font-semibold text-ink-900;
+    }
+
+    .field-hint {
+        @apply mt-0.5 block text-sm font-normal text-ink-700;
+    }
+
+    .field-input {
+        @apply mt-1.5 block w-full rounded-md border border-ink-900/40 bg-white px-3 py-2.5 text-ink-900 placeholder:text-slate-400;
+    }
+
+    .field-input-invalid {
+        @apply border-2 border-red-700;
+    }
+
+    .field-error {
+        @apply mt-1.5 text-sm font-semibold text-red-700;
+    }
+
+    .alert-success {
+        @apply rounded-md border-l-4 border-primary-600 bg-primary-50 px-4 py-3 text-sm font-medium text-primary-800;
+    }
+
+    .alert-error {
+        @apply rounded-md border-l-4 border-red-700 bg-red-50 px-4 py-3 text-sm text-red-800;
+    }
+
+    .alert-info {
+        @apply rounded-md border-l-4 border-amber-500 bg-amber-50 px-4 py-3 text-sm text-amber-900;
+    }
+
+    .ticket {
+        @apply font-mono text-sm font-medium tracking-tight text-ink-700;
+    }
 }

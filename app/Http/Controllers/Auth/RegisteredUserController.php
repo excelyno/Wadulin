@@ -17,17 +17,19 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
+    /**
+     * Public registration always creates a citizen account. Officer accounts
+     * are created by the regency admin.
+     */
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => $request->validated('password'),
-            'role' => UserRole::Petugas,
+            ...$request->safe()->only(['name', 'email', 'password', 'phone']),
+            'role' => UserRole::Masyarakat,
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Akun berhasil dibuat. Selamat datang di Wadulin!');
+        return redirect()->intended(route('dashboard'))->with('success', 'Akun berhasil dibuat. Selamat datang di WADULIN!');
     }
 }

@@ -1,62 +1,125 @@
 @extends('layouts.app')
 
-@section('title', 'Wadulin · Wadah Aduan Digital Kabupaten Jember')
+@section('title', 'WADULIN · Pengaduan Masyarakat Kabupaten Jember')
+
+@php
+    $slaDays = config('wadulin.sla_working_days');
+    $number = fn (int $value): string => number_format($value, 0, ',', '.');
+@endphp
 
 @section('content')
-    <section class="mx-auto grid max-w-[1440px] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_460px] lg:items-center lg:gap-20 lg:py-20">
-        <div class="max-w-2xl">
-            <p class="text-xs font-bold tracking-[.18em] text-primary-700">LAYANAN PENGADUAN RESMI · 31 KECAMATAN</p>
-            <h1 class="mt-6 text-5xl font-extrabold leading-[1.08] tracking-[-.04em] text-slate-900 sm:text-6xl">
-                Sampaikan aduanmu,<br><span class="text-primary-600">kami tindak lanjuti.</span>
-            </h1>
-            <p class="mt-6 max-w-xl text-lg leading-8 text-slate-600">Laporkan masalah fasilitas dan layanan publik langsung dari ponselmu. Setiap aduan mendapat kode tiket dan bisa dipantau sampai tuntas.</p>
-            <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{{ route('pengaduan.create') }}" class="rounded-lg bg-primary-600 px-5 py-3.5 text-sm font-bold text-white shadow-sm hover:bg-primary-700">Laporkan Sekarang</a>
-                <a href="{{ route('dashboard') }}" class="rounded-lg border border-slate-300 bg-white px-5 py-3.5 text-sm font-semibold text-slate-900 hover:bg-slate-50">Lihat cara melapor</a>
-            </div>
-            <form method="GET" action="{{ route('pengaduan.track') }}" class="mt-8 max-w-xl">
-                <p class="mb-2 text-sm text-slate-600">Sudah pernah melapor? Cek perkembangannya tanpa perlu masuk.</p>
-                <div class="flex rounded-lg bg-white p-1.5 shadow-sm ring-1 ring-slate-200">
-                    <input name="kode" required placeholder="WDL-2026-000123" class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm font-mono outline-none focus:ring-0">
-                    <button class="rounded-md bg-ink-900 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-700">Lacak</button>
+    <section class="border-b border-line bg-white">
+        <div class="container-page grid gap-10 py-12 lg:grid-cols-[1fr_380px] lg:py-16">
+            <div>
+                <h1 class="max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl">Laporkan masalah layanan publik di Kabupaten Jember</h1>
+                <p class="mt-5 max-w-xl text-lg leading-8 text-ink-700">
+                    Jalan rusak, lampu jalan mati, sampah menumpuk, atau layanan desa yang lambat. Laporanmu diteruskan ke petugas kecamatan dan wajib ditindaklanjuti dalam {{ $slaDays }} hari kerja.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <a href="{{ route('pengaduan.create') }}" class="btn btn-primary px-6 py-3 text-base">Buat pengaduan</a>
+                    <a href="#cara-melapor" class="btn btn-secondary px-6 py-3 text-base">Cara melapor</a>
                 </div>
-            </form>
-        </div>
-        <div class="relative rounded-2xl bg-primary-50 p-7 lg:h-[500px]">
-            <div class="absolute right-6 top-6 rounded-xl bg-white p-4 shadow-lg ring-1 ring-slate-100">
-                <p class="font-mono text-xs text-slate-500">WDL-2026-000871</p>
-                <p class="mt-2 text-sm font-bold text-slate-900">Jalan berlubang di Jl. Kalimantan</p>
-                <span class="mt-3 inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">Diproses</span>
+                <p class="mt-4 text-sm text-ink-700">Perlu akun warga. Gratis, cukup email dan nomor HP.</p>
             </div>
-            <div class="absolute bottom-10 left-7 rounded-xl bg-ink-900 p-5 text-white shadow-lg">
-                <p class="text-xs text-slate-300">Status terbaru</p>
-                <p class="mt-2 text-base font-bold">Perbaikan dijadwalkan</p>
-                <p class="mt-1 text-xs text-slate-400">Hari ini, 10.05 · Kec. Sumbersari</p>
+
+            <div class="panel self-start p-5">
+                <h2 class="text-lg font-bold">Lacak pengaduan</h2>
+                <p class="mt-1 text-sm text-ink-700">Tidak perlu masuk. Masukkan kode tiket yang kamu terima.</p>
+                <form method="GET" action="{{ route('lacak') }}" class="mt-4">
+                    <label for="kode" class="field-label">Kode tiket</label>
+                    <input id="kode" name="kode" required placeholder="WDL-{{ now()->year }}-000123" class="field-input font-mono uppercase">
+                    <button class="btn btn-primary mt-3 w-full">Lacak</button>
+                </form>
+                <dl class="mt-5 grid grid-cols-3 border-t border-line pt-4 text-center">
+                    <div><dt class="text-xs text-ink-700">Menunggu</dt><dd class="mt-1 text-xl font-bold">{{ $number($stats['pending']) }}</dd></div>
+                    <div class="border-x border-line"><dt class="text-xs text-ink-700">Ditangani</dt><dd class="mt-1 text-xl font-bold">{{ $number($stats['diproses']) }}</dd></div>
+                    <div><dt class="text-xs text-ink-700">Selesai</dt><dd class="mt-1 text-xl font-bold">{{ $number($stats['selesai']) }}</dd></div>
+                </dl>
             </div>
-            <div class="flex h-full items-center justify-center"><div class="flex h-44 w-44 items-center justify-center rounded-full border-2 border-dashed border-primary-600/40"><div class="flex h-24 w-24 items-center justify-center rounded-full bg-primary-600 text-4xl text-white shadow-xl">⌖</div></div></div>
         </div>
     </section>
 
-    <section class="bg-ink-900 text-white">
-        <div class="mx-auto grid max-w-[1440px] gap-8 px-5 py-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
-            @foreach ([['12.480', 'Pengaduan masuk sejak 2024'], ['87%', 'Diselesaikan dalam batas SLA'], ['2,4 hari', 'Rata-rata waktu penanganan'], ['31', 'Kecamatan terlayani penuh']] as [$value, $label])
-                <div class="border-slate-700 sm:border-l sm:pl-7 first:border-0 first:pl-0"><p class="text-4xl font-extrabold tracking-tight">{{ $value }}</p><p class="mt-2 text-sm text-slate-400">{{ $label }}</p></div>
+    <section class="container-page py-12">
+        <dl class="grid gap-px overflow-hidden rounded-md border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            @foreach ([
+                ['Pengaduan masuk', $number($stats['total'])],
+                ['Selesai tepat waktu', $stats['within_sla_percentage'] !== null ? $stats['within_sla_percentage'].'%' : '—'],
+                ['Rata-rata waktu selesai', $stats['average_days'] !== null ? str_replace('.', ',', $stats['average_days']).' hari' : '—'],
+                ['Kecamatan terlayani', $stats['districts']],
+            ] as [$label, $value])
+                <div class="bg-white p-5">
+                    <dt class="text-sm text-ink-700">{{ $label }}</dt>
+                    <dd class="mt-1 text-3xl font-extrabold">{{ $value }}</dd>
+                </div>
             @endforeach
-        </div>
+        </dl>
     </section>
 
-    <section class="mx-auto max-w-[1440px] px-5 py-20 sm:px-8">
-        <div class="flex flex-wrap items-end justify-between gap-6"><div><p class="text-xs font-bold tracking-[.18em] text-primary-700">CARA KERJA</p><h2 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Empat langkah, lalu tinggal dipantau.</h2></div><a href="{{ route('pengaduan.create') }}" class="text-sm font-bold text-primary-700">Panduan lengkap melapor →</a></div>
-        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach ([['01', 'Lapor', 'Pilih kategori, tandai titik di peta, unggah foto.'], ['02', 'Diverifikasi', 'Petugas memeriksa laporan dan wilayah penanganannya.'], ['03', 'Ditindaklanjuti', 'Penanganan lapangan berjalan dan setiap perubahan tercatat.'], ['04', 'Selesai', 'Lihat hasil penanganan, lalu beri penilaian.']] as [$number, $title, $description])
-                <article class="border-t border-slate-200 pt-5"><p class="font-mono text-sm font-semibold text-primary-600">{{ $number }}</p><h3 class="mt-7 text-xl font-bold text-slate-900">{{ $title }}</h3><p class="mt-3 text-sm leading-6 text-slate-600">{{ $description }}</p></article>
+    <section id="cara-melapor" class="container-page scroll-mt-6 pb-12">
+        <h2 class="text-2xl font-bold">Cara melapor</h2>
+        <ol class="mt-6 grid gap-6 md:grid-cols-4">
+            @foreach ([
+                ['Isi laporan', 'Pilih kategori, tandai lokasi di peta, tulis kronologi, dan unggah 1–3 foto bukti.'],
+                ['Simpan kode tiket', 'Kamu langsung menerima kode tiket, misalnya WDL-'.now()->year.'-000123.'],
+                ['Petugas menindaklanjuti', 'Petugas kecamatan memverifikasi dalam '.$slaDays.' hari kerja. Bila terlambat, kabupaten ikut memantau.'],
+                ['Beri penilaian', 'Setelah selesai, lihat foto hasil penanganan dan beri penilaian 1–5.'],
+            ] as $index => [$title, $description])
+                <li class="border-t-4 border-primary-600 pt-4">
+                    <p class="text-sm font-semibold text-primary-700">Langkah {{ $index + 1 }}</p>
+                    <h3 class="mt-1 font-bold">{{ $title }}</h3>
+                    <p class="mt-2 text-sm leading-6 text-ink-700">{{ $description }}</p>
+                </li>
             @endforeach
+        </ol>
+    </section>
+
+    <section class="container-page grid gap-10 pb-12 lg:grid-cols-[1fr_340px]">
+        <div>
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 class="text-2xl font-bold">Aduan terbaru</h2>
+                <a href="{{ route('peta') }}" class="link text-sm">Lihat di peta</a>
+            </div>
+            <div class="panel mt-4 divide-y divide-line">
+                @forelse ($recentComplaints as $complaint)
+                    <a href="{{ route('lacak', ['kode' => $complaint->ticket_code]) }}" class="flex items-start justify-between gap-4 px-4 py-3 hover:bg-paper">
+                        <span class="min-w-0">
+                            <span class="ticket block text-xs">{{ $complaint->ticket_code }}</span>
+                            <span class="block truncate font-semibold">{{ $complaint->title }}</span>
+                            <span class="block text-sm text-ink-700">{{ $complaint->category->name }} · Kec. {{ $complaint->district->name }} · {{ $complaint->created_at->diffForHumans() }}</span>
+                        </span>
+                        <x-status-badge :status="$complaint->status" class="shrink-0" />
+                    </a>
+                @empty
+                    <p class="px-4 py-8 text-center text-sm text-ink-700">Belum ada aduan.</p>
+                @endforelse
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-2xl font-bold">Kategori</h2>
+            <p class="mt-1 text-sm text-ink-700">Jumlah aduan 12 bulan terakhir.</p>
+            <ul class="panel mt-4 divide-y divide-line text-sm">
+                @foreach ($categories as $category)
+                    <li class="flex justify-between gap-3 px-4 py-2.5">
+                        <span>{{ $category->name }}</span>
+                        <span class="font-semibold tabular-nums">{{ $number($category->complaints_count) }}</span>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </section>
 
-    <section class="bg-white"><div class="mx-auto max-w-[1440px] px-5 py-20 sm:px-8"><p class="text-xs font-bold tracking-[.18em] text-primary-700">KATEGORI PENGADUAN</p><div class="mt-3 flex flex-wrap items-end justify-between gap-4"><h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Yang paling sering dilaporkan warga.</h2><span class="text-sm text-slate-500">12 bulan terakhir</span></div><div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">@foreach (\App\Enums\KategoriPengaduan::cases() as $kategori)<div class="flex items-center justify-between rounded-lg border border-slate-200 bg-paper px-4 py-4"><x-kategori-badge :kategori="$kategori" /><span class="text-xs text-slate-500">Lihat →</span></div>@endforeach</div></div></section>
-
-    <section class="mx-auto max-w-[1440px] px-5 py-20 sm:px-8"><div class="grid gap-10 rounded-2xl bg-ink-900 p-7 text-white sm:p-12 lg:grid-cols-[400px_1fr] lg:items-center"><div><p class="text-xs font-bold tracking-[.18em] text-accent-500">LIVE MAP PUBLIK</p><h2 class="mt-4 text-3xl font-extrabold leading-tight">Sebaran aduan se-Kabupaten Jember.</h2><p class="mt-4 text-sm leading-6 text-slate-400">Titik aduan ditampilkan tanpa identitas pelapor. Pantau masalah yang sedang ditangani di sekitarmu.</p><a href="{{ route('dashboard') }}" class="mt-7 inline-block rounded-lg bg-primary-600 px-4 py-3 text-sm font-bold hover:bg-primary-700">Buka peta lengkap</a></div><div class="flex h-72 items-center justify-center rounded-xl border border-white/10 bg-[#0a2e27]"><div class="grid grid-cols-3 gap-8 text-center text-xs text-slate-300"><div><p class="text-2xl font-bold text-white">1.204</p>Menunggu verifikasi</div><div><p class="text-2xl font-bold text-white">863</p>Sedang ditangani</div><div><p class="text-2xl font-bold text-white">9.611</p>Selesai ditangani</div></div></div></div></section>
-
-    <section class="bg-primary-600"><div class="mx-auto flex max-w-[1440px] flex-col justify-between gap-6 px-5 py-12 text-white sm:flex-row sm:items-center sm:px-8"><div><h2 class="text-3xl font-extrabold">Lihat masalah di sekitarmu? Laporkan sekarang.</h2><p class="mt-2 text-primary-50">Butuh kurang dari satu menit. Kamu akan menerima kode tiket untuk memantaunya.</p></div><a href="{{ route('pengaduan.create') }}" class="shrink-0 rounded-lg bg-white px-5 py-3.5 text-sm font-bold text-primary-700 hover:bg-primary-50">Laporkan Sekarang</a></div></section>
+    @if ($announcements->isNotEmpty())
+        <section class="container-page pb-4">
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 class="text-2xl font-bold">Pengumuman</h2>
+                <a href="{{ route('pengumuman.index') }}" class="link text-sm">Semua pengumuman</a>
+            </div>
+            <div class="mt-4 grid gap-4 md:grid-cols-3">
+                @foreach ($announcements as $announcement)
+                    @include('announcements._card', ['announcement' => $announcement])
+                @endforeach
+            </div>
+        </section>
+    @endif
 @endsection

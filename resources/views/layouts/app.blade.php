@@ -1,100 +1,130 @@
+@php
+    $navItems = [
+        ['route' => 'lacak', 'label' => 'Lacak tiket'],
+        ['route' => 'peta', 'label' => 'Peta aduan'],
+        ['route' => 'pengumuman.index', 'label' => 'Pengumuman', 'active' => 'pengumuman.*'],
+        ['route' => 'faq', 'label' => 'Bantuan'],
+    ];
+    $user = auth()->user();
+    if ($user?->role === \App\Enums\UserRole::Masyarakat) {
+        $navItems[] = ['route' => 'dashboard', 'label' => 'Dashboard'];
+        $navItems[] = ['route' => 'pengaduan.index', 'label' => 'Pengaduan saya', 'active' => 'pengaduan.index'];
+    } elseif ($user) {
+        $navItems[] = ['route' => $user->role->homeRoute(), 'label' => 'Panel petugas'];
+    }
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Wadulin — Sistem Pengaduan Masyarakat. Ajukan pengaduan, pantau di dashboard dan peta live.">
+    <meta name="description" content="WADULIN — layanan pengaduan masyarakat Kabupaten Jember. Laporkan masalah layanan publik dan pantau penanganannya.">
     <title>@yield('title', config('app.name'))</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased">
-    <header class="sticky top-0 z-[1200] border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div class="mx-auto flex h-[74px] max-w-[1440px] items-center justify-between gap-6 px-5 sm:px-8">
-            <a href="{{ route('beranda') }}" class="flex shrink-0 items-center gap-2">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-600 text-white shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
-                        <path fill-rule="evenodd" d="M11.54 22.35c.19.13.38.21.6.21a1 1 0 0 0 .61-.21l.06-.05C16.41 19.45 21 15.06 21 10.5A9 9 0 1 0 3 10.5c0 4.56 4.59 8.95 8.54 11.8l-.01.05ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"/>
-                    </svg>
-                </span>
-                <span><span class="block text-[15px] font-extrabold tracking-tight text-slate-900">WADULIN</span><span class="block text-[10px] leading-none text-slate-500">Pemerintah Kabupaten Jember</span></span>
+<body class="flex min-h-screen flex-col antialiased">
+    <a href="#konten" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[2000] focus:bg-accent-500 focus:px-3 focus:py-2 focus:font-semibold">Langsung ke konten</a>
+
+    <div class="bg-ink-900 text-xs text-white/80">
+        <div class="container-page py-1.5">Layanan pengaduan resmi Pemerintah Kabupaten Jember</div>
+    </div>
+
+    <header class="relative z-[1200] border-b-4 border-primary-600 bg-white">
+        <div class="container-page flex h-16 items-center justify-between gap-6">
+            <a href="{{ route('beranda') }}" class="flex items-baseline gap-2">
+                <span class="text-xl font-extrabold tracking-tight text-ink-900">WADULIN</span>
+                <span class="hidden text-sm text-ink-700 sm:inline">Wadah Aduan Digital</span>
             </a>
 
-            <nav class="hidden items-center gap-1 overflow-x-auto lg:flex lg:gap-1">
-                @php
-                    $navItems = [
-                        ['route' => 'beranda', 'label' => 'Beranda'],
-                        ['route' => 'pengaduan.create', 'label' => 'Cara Melapor'],
-                        ['route' => 'pengaduan.track', 'label' => 'Lacak Tiket'],
-                        ['route' => 'dashboard', 'label' => 'Statistik'],
-                    ];
-                @endphp
+            <nav class="hidden items-center gap-1 lg:flex" aria-label="Menu utama">
                 @foreach ($navItems as $item)
-                    @php $active = request()->routeIs($item['route']); @endphp
                     <a href="{{ route($item['route']) }}"
-                       class="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium {{ $active ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900' }}">
-                        {{ $item['label'] }}
-                    </a>
+                       @class([
+                           'px-3 py-2 text-sm font-medium',
+                           'text-ink-900 underline decoration-2 underline-offset-[6px] decoration-primary-600' => request()->routeIs($item['active'] ?? $item['route']),
+                           'text-ink-700 hover:text-ink-900 hover:underline hover:underline-offset-[6px]' => ! request()->routeIs($item['active'] ?? $item['route']),
+                       ])>{{ $item['label'] }}</a>
                 @endforeach
-
-                <span class="mx-1 hidden h-6 w-px bg-slate-200 sm:block"></span>
-
-                @guest
-                    <a href="{{ route('login') }}"
-                        class="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-100">
-                        Masuk
-                    </a>
-                    <a href="{{ route('register') }}"
-                        class="whitespace-nowrap rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700">
-                        Laporkan
-                    </a>
-                @else
-                    <div class="flex items-center gap-2">
-                        <span class="hidden text-sm font-medium text-slate-700 sm:inline">{{ Auth::user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                    class="whitespace-nowrap rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
-                                Keluar
-                            </button>
-                        </form>
-                    </div>
-                @endguest
             </nav>
+
+            <div class="hidden items-center gap-2 lg:flex">
+                @auth
+                    <span class="text-sm text-ink-700">{{ $user->name }}</span>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="btn btn-secondary py-2">Keluar</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="px-3 py-2 text-sm font-semibold text-ink-900 hover:underline">Masuk</a>
+                    <a href="{{ route('pengaduan.create') }}" class="btn btn-primary py-2">Buat pengaduan</a>
+                @endauth
+            </div>
+
+            <details class="group lg:hidden">
+                <summary class="btn btn-secondary cursor-pointer list-none py-2">Menu</summary>
+                <div class="absolute inset-x-0 top-full border-b border-line bg-white shadow-sm">
+                    <nav class="container-page flex flex-col py-2" aria-label="Menu utama">
+                        @foreach ($navItems as $item)
+                            <a href="{{ route($item['route']) }}" class="border-b border-line/60 py-3 text-sm font-medium last:border-0">{{ $item['label'] }}</a>
+                        @endforeach
+                        <div class="flex gap-2 py-3">
+                            @auth
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="btn btn-secondary">Keluar ({{ $user->name }})</button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-secondary">Masuk</a>
+                                <a href="{{ route('pengaduan.create') }}" class="btn btn-primary">Buat pengaduan</a>
+                            @endauth
+                        </div>
+                    </nav>
+                </div>
+            </details>
         </div>
     </header>
 
-    @if (session('success'))
-        <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-5 w-5 shrink-0">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.85-8.64a.75.75 0 0 0-1.22-.87l-2.6 3.64-1.49-1.49a.75.75 0 1 0-1.06 1.06l2.14 2.14a.75.75 0 0 0 1.13-.09l3.1-4.39Z" clip-rule="evenodd"/>
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
+    @if (session('success') || session('error'))
+        <div class="container-page mt-5">
+            @if (session('success'))
+                <p class="alert-success" role="status">{{ session('success') }}</p>
+            @endif
+            @if (session('error'))
+                <p class="alert-error" role="alert">{{ session('error') }}</p>
+            @endif
         </div>
     @endif
 
-    @if (session('error'))
-        <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
-                {{ session('error') }}
-            </div>
-        </div>
-    @endif
-
-    <main class="flex-1">
+    <main id="konten" class="flex-1">
         @yield('content')
     </main>
 
-    <footer class="mt-12 border-t border-slate-200 bg-ink-900 text-white">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <div class="flex flex-col items-center justify-between gap-3 text-sm text-slate-500 sm:flex-row">
-                <p>&copy; {{ date('Y') }} Wadulin — Sistem Pengaduan Masyarakat.</p>
-                <p>Dibangun dengan Laravel, Tailwind CSS &amp; Leaflet.</p>
+    <footer class="mt-16 border-t border-line bg-white">
+        <div class="container-page grid gap-8 py-10 text-sm sm:grid-cols-3">
+            <div>
+                <p class="font-extrabold">WADULIN</p>
+                <p class="mt-2 text-ink-700">Layanan pengaduan masyarakat Pemerintah Kabupaten Jember. Setiap aduan ditangani petugas kecamatan dalam {{ config('wadulin.sla_working_days') }} hari kerja.</p>
             </div>
+            <div>
+                <p class="font-semibold">Layanan</p>
+                <ul class="mt-2 space-y-1.5 text-ink-700">
+                    <li><a href="{{ route('pengaduan.create') }}" class="hover:underline">Buat pengaduan</a></li>
+                    <li><a href="{{ route('lacak') }}" class="hover:underline">Lacak tiket</a></li>
+                    <li><a href="{{ route('peta') }}" class="hover:underline">Peta aduan</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="font-semibold">Informasi</p>
+                <ul class="mt-2 space-y-1.5 text-ink-700">
+                    <li><a href="{{ route('pengumuman.index') }}" class="hover:underline">Pengumuman</a></li>
+                    <li><a href="{{ route('faq') }}" class="hover:underline">Bantuan &amp; FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-line">
+            <p class="container-page py-4 text-xs text-ink-700">&copy; {{ date('Y') }} Pemerintah Kabupaten Jember</p>
         </div>
     </footer>
 

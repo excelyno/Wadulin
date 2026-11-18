@@ -1,58 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WADULIN — Wadah Aduan Digital Kabupaten Jember
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi pengaduan masyarakat. Warga melaporkan masalah layanan publik (jalan rusak, lampu jalan mati, sampah, dan sejenisnya). Petugas kecamatan menindaklanjuti dalam batas waktu (SLA). Bila terlambat, pengaduan otomatis dieskalasi ke kabupaten.
 
-## About Laravel
+Dibangun dengan Laravel 13, Tailwind CSS 4, dan Leaflet (OpenStreetMap).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Publik (tanpa login)**
+- Beranda dengan statistik asli dan aduan terbaru
+- Lacak tiket dengan kode `WDL-2026-000123`. Nama pelapor dan catatan internal tidak ditampilkan.
+- Peta aduan
+- Pengumuman dan halaman Bantuan (FAQ)
+- Pindai QR di fasilitas umum (`/qr/{kode}`). Form aduan langsung terisi lokasinya.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Warga**
+- Buat pengaduan: kategori, titik di peta, kronologi, 1–3 foto bukti, opsi sembunyikan nama
+- Dashboard: ringkasan status dan notifikasi dari petugas
+- Batalkan pengaduan selama statusnya masih *Pending*
+- Beri penilaian 1–5 setelah pengaduan *Selesai*
 
-## Learning Laravel
+**Admin Kecamatan**
+- Antrian pengaduan di kecamatannya, dengan filter status, kategori, SLA, dan pencarian
+- Ubah status: Pending → Diproses → Selesai, atau Ditolak (alasan wajib). Bisa unggah foto hasil.
+- Disposisi ke kecamatan lain. SLA dimulai ulang.
+- Kelola titik QR di kecamatannya
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Admin Kabupaten**
+- Semua fitur di atas untuk seluruh kecamatan. Ubah status hanya untuk pengaduan yang tereskalasi.
+- Dashboard peringkat kecamatan dan daftar eskalasi
+- Kelola kategori, akun petugas, pengumuman, dan FAQ
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Kebutuhan
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- PHP 8.3+ dengan ekstensi `pdo_sqlite`, `fileinfo`, `mbstring`
+- Composer
+- Node.js 20+ dan npm
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Instalasi
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer run setup          # install dependensi, buat .env, generate key, migrate, build aset
+php artisan db:seed         # isi data demo (lihat bagian Akun demo)
+php artisan storage:link    # agar foto upload bisa tampil
+composer run dev            # jalankan server + Vite
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Buka `http://localhost:8000`.
 
-## Contributing
+Untuk mengulang database dari nol beserta data demo:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Code of Conduct
+> Perintah ini **menghapus semua data** di database lokal.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Akun demo
 
-## Security Vulnerabilities
+Dibuat oleh `DatabaseSeeder`. Semua akun memakai kata sandi **`password`**.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Peran | Email | Keterangan |
+| --- | --- | --- |
+| Admin Kabupaten | `kabupaten@wadulin.test` | Akses semua kecamatan, eskalasi, dan pengaturan |
+| Admin Kecamatan | `patrang@wadulin.test` | Petugas Kecamatan Patrang |
+| Warga | `warga@wadulin.test` | Siti Aminah, sudah punya beberapa pengaduan |
 
-## License
+Seeder juga membuat **10 akun warga acak** (nama dan email dari Faker, kata sandi tetap `password`). Email mereka bisa dilihat di tabel `users`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Data demo lain yang ikut dibuat:
+
+- 31 kecamatan di Kabupaten Jember dan 11 kategori pengaduan
+- 60 pengaduan dengan status campuran. Sekitar sepertiganya di Kecamatan Patrang agar panel petugas demo terisi. Pengaduan terbuka yang lewat SLA langsung ditandai tereskalasi.
+- 1 titik QR (Taman Kota Patrang), 1 pengumuman, dan 6 FAQ
+
+Tabel akun demo juga tampil di halaman login, tetapi **hanya bila `APP_ENV=local`**.
+
+> Jangan jalankan seeder demo di server produksi.
+
+## Konfigurasi
+
+| Variabel `.env` | Bawaan | Fungsi |
+| --- | --- | --- |
+| `WADULIN_SLA_WORKING_DAYS` | `3` | Batas hari kerja (Senin–Jumat) sebelum pengaduan dieskalasi |
+
+## Eskalasi otomatis
+
+Perintah `complaints:escalate` menandai pengaduan terbuka yang melewati batas SLA. Perintah ini terjadwal tiap jam. Agar berjalan, aktifkan scheduler:
+
+```bash
+php artisan schedule:work                       # saat development
+* * * * * php /path/ke/proyek/artisan schedule:run   # cron di server
+```
+
+Bisa juga dijalankan manual dengan `php artisan complaints:escalate`.
+
+## Tes
+
+```bash
+php artisan test --compact
+```
+
+Tes memakai SQLite in-memory, jadi tidak menyentuh database lokal.
+
+## Struktur singkat
+
+| Lokasi | Isi |
+| --- | --- |
+| `app/Models/Complaint.php` | Kode tiket, perhitungan SLA, transisi status, disposisi, pembatalan |
+| `app/Enums/ComplaintStatus.php` | Status dan transisi yang diizinkan |
+| `app/Policies/` | Siapa boleh melihat, mengubah, membatalkan, atau menilai |
+| `app/Http/Controllers/Admin/` | Panel kecamatan dan kabupaten |
+| `routes/web.php` | Rute publik, warga (`role:masyarakat`), dan panel (`/kecamatan`, `/kabupaten`) |
+| `resources/css/app.css` | Token warna dan komponen UI (`btn`, `panel`, `field-input`, dan lainnya) |
+
+## Catatan
+
+- Peta memakai tile OpenStreetMap dan Leaflet dari CDN unpkg. Gambar QR dibuat di browser dengan `qrcodejs` dari cdnjs. Keduanya butuh koneksi internet.
+- Foto disimpan di disk `public` (`storage/app/public/complaints/{kode-tiket}`).
