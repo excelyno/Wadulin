@@ -24,6 +24,7 @@ Jangan buru-buru. Baca berurutan, buka file kode yang disebut, dan cocokkan deng
 | 9 | [Tampilan (frontend)](09-tampilan-frontend.md) | Blade, layout, komponen, Tailwind, peta Leaflet, QR | Hari kelima |
 | 10 | [Testing](10-testing.md) | Cara tes ditulis, daftar tes, factory | Hari kelima |
 | 11 | [Panduan kerja harian](11-panduan-kerja.md) | Perintah sehari-hari, contoh menambah fitur, kesalahan umum, keterbatasan yang diketahui | Simpan sebagai pegangan |
+| 12 | [Pembagian fitur](12-pembagian-modul.md) | Fitur dibagi ke 4 orang: endpoint, kode, alur, tabel, aturan, tes, kontrak bersama, backlog | Setelah bab 1–2, untuk tahu bagianmu |
 
 ## Cara memakai dokumentasi ini
 
